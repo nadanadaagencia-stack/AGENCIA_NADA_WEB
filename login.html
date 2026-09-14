@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>NADA | Login</title>
+    <style>
+        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        input { background: rgba(0,0,0,0.4) !important; border: 1px solid #222 !important; color: white !important; }
+        input:focus { border-color: #ef4444 !important; outline: none; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-sm">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-black italic tracking-tighter">NADA<span class="text-red-600">.</span></h1>
+            <p class="text-[9px] uppercase tracking-[0.4em] text-zinc-500 font-bold mt-2">Partner Authorization</p>
+        </div>
+
+        <div class="glass p-8 rounded-3xl shadow-2xl">
+            <form id="authForm" class="space-y-5">
+                <div>
+                    <label class="text-[10px] uppercase font-bold text-zinc-600 mb-2 block">Partner ID</label>
+                    <input type="text" id="idInput" required class="w-full p-4 rounded-xl text-sm" placeholder="Tu identificador">
+                </div>
+                <div>
+                    <label class="text-[10px] uppercase font-bold text-zinc-600 mb-2 block">Secret Key</label>
+                    <input type="password" id="passInput" required class="w-full p-4 rounded-xl text-sm" placeholder="••••••••">
+                </div>
+                <div id="error" class="hidden text-red-500 text-[10px] font-bold uppercase text-center animate-pulse">
+                    Credenciales No Autorizadas
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-white hover:text-black text-white transition-all py-4 rounded-xl font-black italic uppercase text-xs tracking-widest">
+                    Entrar al Blueprint
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const DB_KEY = 'nada_network_db';
+
+        document.getElementById('authForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('idInput').value.trim().toLowerCase();
+            const pass = document.getElementById('passInput').value;
+            const error = document.getElementById('error');
+
+            const users = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+            const user = users.find(u => u.id === id && u.pass === pass);
+
+            if (user) {
+                // Guardamos la sesión activa para que Academia sepa quién es
+                localStorage.setItem('active_session', JSON.stringify(user));
+                window.location.href = user.portal; 
+            } else {
+                error.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

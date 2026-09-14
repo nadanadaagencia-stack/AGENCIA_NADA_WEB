@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authority Media Blueprint | Agencia NADA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+        
+        :root {
+            --primary-red: #991B1B;
+            --bg-dark: #0C0A09;
+            --card-dark: #1C1917;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: #FAFAF9; 
+            margin: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        .page-break { page-break-after: always; }
+
+        .session-card {
+            background: var(--card-dark);
+            border: 1px solid #292524;
+            border-left: 4px solid var(--primary-red);
+            break-inside: avoid;
+        }
+
+        @media print {
+            body { background-color: #0C0A09 !important; }
+            .no-print { display: none; }
+            @page { margin: 1cm; }
+        }
+
+        .phase-badge {
+            display: inline-block;
+            border: 1px solid var(--primary-red);
+            color: var(--primary-red);
+            padding: 2px 12px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="p-8 md:p-16">
+
+    <!-- PORTADA -->
+    <div class="max-w-4xl mx-auto mb-20">
+        <div class="flex justify-between items-center mb-12">
+            <div class="text-red-700 font-bold tracking-widest text-sm">AGENCIA NADA</div>
+            <div class="text-stone-500 text-xs uppercase tracking-widest">Confidential Strategy v2.0</div>
+        </div>
+        
+        <h1 class="text-6xl md:text-7xl font-bold mb-6 leading-tight">
+            AUTHORITY <br>
+            <span class="text-stone-500">MEDIA</span> <br>
+            <span class="italic text-red-800">BLUEPRINT</span>
+        </h1>
+        
+        <p class="text-stone-400 text-xl max-w-xl font-light leading-relaxed border-l border-stone-800 pl-6">
+            Arquitectura de infraestructura mediática y monopolio de atención para consultores de alto impacto.
+        </p>
+
+        <div class="mt-16 grid grid-cols-2 gap-8 border-t border-stone-800 pt-8">
+            <div>
+                <span class="block text-stone-600 text-xs uppercase tracking-widest mb-2">Preparado para</span>
+                <span class="text-stone-300 font-semibold uppercase">Partner Estratégico</span>
+            </div>
+            <div>
+                <span class="block text-stone-600 text-xs uppercase tracking-widest mb-2">Inversión del Activo</span>
+                <span class="text-stone-300 font-semibold uppercase">High-Ticket Tier 1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO FASE I & II -->
+    <div class="max-w-4xl mx-auto">
+        <!-- FASE I -->
+        <div class="mb-12">
+            <span class="phase-badge">Fase I: Fundamentos y Arquitectura</span>
+            <div class="grid gap-4">
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">01. Niche Architecture</h3>
+                    <p class="text-stone-400 text-sm">Construcción de la propuesta de valor única (USP). Monopolio de concepto sobre competencia por "vistas".</p>
+                </div>
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">02. Psychological Hooks</h3>
+                    <p class="text-stone-400 text-sm">Ingeniería de la retención. Secuestro de atención en los primeros 60 segundos mediante gatillos mentales.</p>
+                </div>
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">03. Visual Packaging</h3>
+                    <p class="text-stone-400 text-sm">CTR de alto impacto. Diseño de miniaturas basado en jerarquía visual y contraste cromático técnico.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FASE II -->
+        <div class="mb-12 page-break">
+            <span class="phase-badge">Fase II: Optimización Técnica e IA</span>
+            <div class="grid gap-4">
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">04. IA para Guionismo</h3>
+                    <p class="text-stone-400 text-sm">Prompt Engineering para creadores. Auditoría de estructura de guiones y reducción de tiempo de escritura.</p>
+                </div>
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">05. Technical Aesthetic</h3>
+                    <p class="text-stone-400 text-sm">Estética de autoridad. Iluminación técnica y encuadre cinematográfico que justifica tu fee.</p>
+                </div>
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">06. Sound & Atmosphere</h3>
+                    <p class="text-stone-400 text-sm">Diseño de audio y ecualización de voz. Uso estratégico de silencios para proyectar poder.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FASE III -->
+        <div class="mb-12">
+            <span class="phase-badge">Fase III: Sistemas y Escala</span>
+            <div class="grid gap-4">
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">07. Systematized Workflow</h3>
+                    <p class="text-stone-400 text-sm">Optimización de procesos. Reducción de 10h a 3h de edición mediante templates estandarizados.</p>
+                </div>
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">08. IA para B-Roll & Assets</h3>
+                    <p class="text-stone-400 text-sm">Generación automática de recursos visuales. Mantener dinamismo sin filmación extra constante.</p>
+                </div>
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">09. Data & Iteration</h3>
+                    <p class="text-stone-400 text-sm">Análisis predictivo. Uso de Analytics para predecir el éxito antes de publicar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FASE IV -->
+        <div class="mb-12">
+            <span class="phase-badge">Fase IV: Monetización y Autoridad</span>
+            <div class="grid gap-4">
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">10. Money Infrastructure</h3>
+                    <p class="text-stone-400 text-sm">Setup fiscal y bancario internacional para flujos de cobro de alto ticket.</p>
+                </div>
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">11. High-Ticket Selling</h3>
+                    <p class="text-stone-400 text-sm">Media Kit profesional. Negociación de integraciones de marca basadas en autoridad, no en volumen.</p>
+                </div>
+                <div class="session-card p-6 rounded-sm">
+                    <h3 class="text-lg font-bold mb-1 italic text-red-700">12. Media Owner Certification</h3>
+                    <p class="text-stone-400 text-sm">Examen de competencia técnica, certificación y plan de escala a 12 meses.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="max-w-4xl mx-auto mt-20 border-t border-stone-800 pt-8 text-center text-stone-600 text-[10px] tracking-widest uppercase">
+        © Agencia NADA - Todos los derechos reservados - Prohibida su reproducción sin autorización directa de la dirección estratégica.
+    </footer>
+
+</body>
+</html>

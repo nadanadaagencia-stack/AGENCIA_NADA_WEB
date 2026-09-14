@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Retention Academy | Agencia NADA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        :root { --nada-red: #E11D48; --nada-black: #050505; }
+        body { background-color: var(--nada-black); font-family: 'Inter', sans-serif; color: white; overflow-x: hidden; }
+        .italic-black { font-style: italic; font-weight: 900; }
+        .ops-grid { background-image: radial-gradient(rgba(225, 29, 72, 0.05) 1px, transparent 1px); background-size: 30px 30px; }
+        .hidden { display: none !important; }
+        .card-container { perspective: 1000px; height: 520px; position: relative; }
+        .card-swipe { 
+            position: absolute; inset: 0; z-index: 20;
+            background-size: cover; background-position: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s;
+            cursor: pointer; overflow: hidden; border-radius: 12px;
+        }
+        .card-swipe::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,1) 20%, rgba(0,0,0,0.4) 100%); z-index: 1; }
+        .card-container:hover .card-swipe { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .blueprint-content { 
+            position: absolute; inset: 0; z-index: 10; background: #080808; 
+            border: 1px solid rgba(225, 29, 72, 0.2); padding: 2.5rem; 
+            display: flex; flex-direction: column; border-radius: 12px; 
+        }
+        .blueprint-list { font-size: 0.75rem; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em; line-height: 2; list-style: none; padding: 0; }
+        .blueprint-list li::before { content: "→"; color: #E11D48; font-weight: bold; margin-right: 10px; }
+        #resource-vault { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.98); backdrop-filter: blur(20px); }
+        
+        .meet-btn-premium {
+            background: linear-gradient(45deg, #E11D48, #9F1239);
+            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 0 10px 30px rgba(225, 29, 72, 0.2);
+        }
+        .meet-btn-premium:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(225, 29, 72, 0.4);
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body class="ops-grid">
+
+    <div id="login-overlay" class="fixed inset-0 z-[100] bg-black flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-zinc-900 border border-white/10 p-10 rounded-2xl text-center">
+            <div class="w-16 h-16 bg-rose-600 mx-auto flex items-center justify-center rounded-sm font-black italic text-3xl mb-8 text-white">N</div>
+            <h2 class="text-2xl italic-black uppercase tracking-tighter mb-6 text-white">Acceso Whales Only</h2>
+            <div class="space-y-4">
+                <input type="email" id="log-email" placeholder="Email" class="w-full bg-black border border-white/10 p-4 text-xs font-bold rounded outline-none focus:border-rose-600 text-white text-center">
+                <input type="password" id="log-pass" placeholder="Password" class="w-full bg-black border border-white/10 p-4 text-xs font-bold rounded outline-none focus:border-rose-600 text-white text-center">
+                <button id="login-btn" class="w-full bg-rose-600 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-rose-700 transition-all text-white">Ejecutar Blueprint</button>
+            </div>
+            <p id="error-msg" class="text-rose-600 text-[10px] font-black uppercase mt-4 hidden">Credenciales Inválidas</p>
+        </div>
+    </div>
+
+    <div id="app-content" class="hidden">
+        <nav class="border-b border-white/5 bg-black/80 backdrop-blur-xl p-6 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto flex justify-between items-center text-white">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-rose-600 flex items-center justify-center rounded-sm font-black italic">N</div>
+                    <span class="text-xl font-black italic uppercase tracking-tighter">Retention Academy</span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-right">
+                        <p id="user-display-name" class="text-[10px] font-black uppercase italic tracking-widest"></p>
+                        <p id="user-tier-display" class="text-[9px] text-rose-600 font-bold uppercase"></p>
+                    </div>
+                    <button id="logout-btn" class="p-2 hover:text-rose-600 transition-colors text-zinc-500" title="Cerrar Sesión">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="max-w-7xl mx-auto px-6 py-20">
+            <h1 class="text-7xl italic-black tracking-tighter leading-none uppercase mb-20 text-white text-center md:text-left">Mastery<br/><span class="text-rose-600">Blueprint</span></h1>
+            <div id="modules-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+        </main>
+    </div>
+
+    <div id="resource-vault">
+        <div class="p-8 md:p-20 overflow-y-auto h-full text-white">
+            <div class="max-w-4xl mx-auto">
+                <button id="close-vault-btn" class="text-rose-600 font-black text-xs uppercase tracking-widest mb-10 flex items-center gap-2 hover:translate-x-[-5px] transition-transform">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Volver al Dashboard
+                </button>
+                <div id="vault-data"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSry58sg2GhLYBZ7151Xa57ObgpXukbXs",
+            authDomain: "agencia-nada.firebaseapp.com",
+            projectId: "agencia-nada",
+            storageBucket: "agencia-nada.firebasestorage.app",
+            messagingSenderId: "469663154642",
+            appId: "1:469663154642:web:c63f30172589e7a224880b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let currentUser = null;
+        let userDataSnapshot = null;
+
+        const modulesData = [
+            { t: "Niche Architecture", img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800", bullets: ["Content-Market Fit Industrial", "The Unfair Advantage", "De Commodity a Autoridad", "Avatar Identification"], speech: "No competimos por precio." },
+            { t: "Psychological Hooks", img: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=800", bullets: ["Ingeniería de Retención", "Estructura de Tesis de Guion", "Hook de Autoridad", "Gestión de Picos"], speech: "Secuestro de atención." },
+            { t: "Visual Packaging", img: "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800", bullets: ["Thumbnail Architecture", "Psicología de Color", "Jerarquía Forense", "A/B Testing"], speech: "El empaquetado justifica el fee." },
+            { t: "IA para Guionismo", img: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800", bullets: ["Prompting Frameworks", "Tone Cloning", "Logic Audit", "Workflows"], speech: "IA para pensar." },
+            { t: "Technical Aesthetic", img: "https://images.unsplash.com/photo-1574717024757-c1ec4d86ae82?auto=format&fit=crop&w=800", bullets: ["Color Grading", "Lighting Setup", "Framing", "Gear Audit"], speech: "Luz y estatus." },
+            { t: "Sound & Atmosphere", img: "https://images.unsplash.com/photo-1528109966604-5a6a4a964e8d?auto=format&fit=crop&w=800", bullets: ["Audio Engineering", "Psychological SFX", "Pro Mixing", "Atmosphere"], speech: "70% de retención." },
+            { t: "Systematized Workflow", img: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=800", bullets: ["Project Templates", "Batching Strategy", "Team Systems", "Proxies"], speech: "Sistematizar es libertad." },
+            { t: "IA para B-Roll", img: "https://plus.unsplash.com/premium_photo-1725985758416-618e34ef5616?auto=format&fit=crop&w=800", bullets: ["Text-to-Video", "Upscaling", "Background Control", "Overlays"], speech: "Recursos infinitos." },
+            { t: "Data & Iteration", img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800", bullets: ["Retention Maps", "Drop-off Analysis", "Iteration", "Optimization"], speech: "Los datos no mienten." },
+            { t: "Money Infrastructure", img: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800", bullets: ["Payment Rails", "Authority Invoicing", "Offshore Legal", "Tax Strategy"], speech: "Infraestructura de 10k." },
+            { t: "High-Ticket Selling", img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800", bullets: ["Sales Pitch", "Objection Framework", "Authority Positioning", "Scaling Roadmap"], speech: "Vendés autoridad." },
+            { t: "Media Owner", img: "https://plus.unsplash.com/premium_photo-1683749809617-bb6885a1e7ae?auto=format&fit=crop&w=800", bullets: ["Blueprint Test", "12-Month Map", "Whale Network", "Certification"], speech: "Dueño de tu media." }
+        ];
+
+        window.onload = () => {
+            const saved = localStorage.getItem('nada_whale');
+            if(saved) {
+                currentUser = JSON.parse(saved);
+                initRealtimeSync();
+            }
+        };
+
+        const attemptLogin = async () => {
+            const email = document.getElementById('log-email').value.toLowerCase().trim();
+            const pass = document.getElementById('log-pass').value;
+            const docId = email.replace(/\./g, '-');
+            try {
+                const snap = await getDoc(doc(db, "whales", docId));
+                if(snap.exists() && snap.data().pass === pass) {
+                    currentUser = snap.data();
+                    currentUser.docId = docId;
+                    localStorage.setItem('nada_whale', JSON.stringify(currentUser));
+                    initRealtimeSync();
+                } else {
+                    document.getElementById('error-msg').classList.remove('hidden');
+                }
+            } catch(e) { console.error(e); }
+        };
+
+        function initRealtimeSync() {
+            onSnapshot(doc(db, "whales", currentUser.docId), (doc) => {
+                if (doc.exists()) {
+                    userDataSnapshot = doc.data();
+                    renderAcademy(userDataSnapshot);
+                }
+            });
+        }
+
+        window.openVault = (i) => {
+            if(!userDataSnapshot) return;
+            const mod = modulesData[i];
+            const n = (i + 1).toString().padStart(2, '0');
+            const meetUrl = userDataSnapshot[`meet_${n}`] || "";
+            const schedule = userDataSnapshot[`schedule_${n}`] || "Fecha a confirmar";
+            const docUrl = userDataSnapshot[`doc_${n}`] || "";
+            
+            let meetSection = "";
+            if(meetUrl) {
+                meetSection = `
+                    <div class="mb-10 p-8 bg-zinc-900 border-l-4 border-rose-600 rounded-lg">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-rose-600 mb-2">Next Master Session</p>
+                        <div class="flex items-center gap-3 mb-6">
+                            <i data-lucide="calendar" class="w-5 h-5 text-zinc-500"></i>
+                            <p class="text-xl font-black uppercase italic tracking-tighter">${schedule}</p>
+                        </div>
+                        <a href="${meetUrl}" target="_blank" class="meet-btn-premium flex items-center justify-center gap-4 py-6 rounded-sm text-white transition-all">
+                            <i data-lucide="video" class="w-5 h-5"></i>
+                            <span class="text-xs font-black uppercase tracking-[0.2em]">Acceso a Videollamada</span>
+                        </a>
+                    </div>`;
+            }
+
+            document.getElementById('vault-data').innerHTML = `
+                <span class="text-rose-600 font-black italic text-6xl opacity-20 block mb-4">0${i+1}</span>
+                <h2 class="text-5xl italic-black uppercase tracking-tighter mb-12 text-white">${mod.t}</h2>
+                <div class="grid md:grid-cols-2 gap-12 text-white">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-rose-600 mb-4">Master Speech</p>
+                        <p class="text-xl font-light text-zinc-300 italic border-l-2 border-rose-600 pl-6 mb-10">"${mod.speech}"</p>
+                        ${meetSection}
+                    </div>
+                    <div class="bg-zinc-900 border border-white/5 p-8 rounded-xl shadow-2xl h-fit">
+                        <p class="text-[10px] font-black uppercase text-zinc-500 mb-6 tracking-widest">Vault Assets</p>
+                        ${docUrl ? `
+                            <a href="${docUrl}" target="_blank" class="flex items-center justify-between p-5 bg-black border border-white/10 hover:border-rose-600 transition-all rounded-sm">
+                                <span class="text-[10px] font-black uppercase tracking-widest">Download Blueprint PDF</span>
+                                <i data-lucide="file-text" class="w-4 h-4 text-rose-600"></i>
+                            </a>` : `
+                            <p class="text-[8px] uppercase font-black text-zinc-600 italic">No resources available for this session yet.</p>
+                        `}
+                    </div>
+                </div>`;
+            document.getElementById('resource-vault').style.display = 'block';
+            lucide.createIcons();
+        };
+
+        function renderAcademy(user) {
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            document.getElementById('user-display-name').innerText = user.name;
+            document.getElementById('user-tier-display').innerText = `Tier: ${user.tier || 'Authority Whale'}`;
+            let html = "";
+            modulesData.forEach((mod, i) => {
+                const n = (i + 1).toString().padStart(2, '0');
+                const isLocked = (i + 1) > user.level;
+                const hasAssets = (user[`meet_${n}`] && user[`meet_${n}`].trim() !== "") || (user[`doc_${n}`] && user[`doc_${n}`].trim() !== "");
+                
+                html += `
+                    <div class="card-container">
+                        ${isLocked ? `<div class="absolute inset-0 bg-black/90 backdrop-blur-md z-[40] flex flex-col items-center justify-center rounded-xl border border-white/5"><i data-lucide="lock" class="w-8 h-8 text-rose-600 mb-2 opacity-50"></i><span class="text-[8px] font-black uppercase tracking-widest text-zinc-500">Módulo Bloqueado</span></div>` : ''}
+                        <div class="card-swipe" style="background-image: url('${mod.img}')">
+                            <div class="p-8 h-full flex flex-col justify-end relative z-10">
+                                <span class="text-4xl italic-black text-rose-600 mb-2">0${i+1}</span>
+                                <h3 class="text-2xl italic-black uppercase mb-4 text-white">${mod.t}</h3>
+                                <div class="flex items-center gap-2 opacity-60 text-white"><i data-lucide="arrow-up" class="w-3 h-3 text-rose-600"></i><span class="text-[8px] font-black uppercase tracking-[0.2em]">Swipe for Blueprint</span></div>
+                            </div>
+                        </div>
+                        <div class="blueprint-content">
+                            <div class="flex-grow">
+                                <p class="text-[9px] font-black text-rose-600 mb-4 uppercase tracking-widest">Session 0${i+1}</p>
+                                <h4 class="text-xl italic-black uppercase leading-none mb-6 border-b border-white/5 pb-4 text-white">${mod.t}</h4>
+                                <ul class="blueprint-list text-white">${mod.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+                            </div>
+                            ${hasAssets ? `<button onclick="window.openVault(${i})" class="w-full bg-rose-600 text-white py-4 mt-6 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Access Master Resource</button>` : `<button disabled class="w-full bg-zinc-800 text-zinc-500 py-4 mt-6 text-[10px] font-black uppercase tracking-widest cursor-not-allowed">Resource Pending</button>`}
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('modules-grid').innerHTML = html;
+            lucide.createIcons();
+        }
+
+        document.getElementById('login-btn').onclick = attemptLogin;
+        document.getElementById('logout-btn').onclick = () => { localStorage.removeItem('nada_whale'); location.reload(); };
+        document.getElementById('close-vault-btn').onclick = () => { document.getElementById('resource-vault').style.display = 'none'; };
+    </script>
+</body>
+</html>

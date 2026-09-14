@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Whale Control Center | Agencia NADA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        :root { --nada-red: #E11D48; --nada-black: #050505; }
+        body { background-color: var(--nada-black); font-family: 'Inter', sans-serif; color: white; }
+        .italic-black { font-style: italic; font-weight: 900; }
+        input, select { background: #0f0f0f !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
+        .hidden { display: none !important; }
+        .asset-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+
+    <div id="admin-auth" class="fixed inset-0 z-[200] bg-black flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-zinc-900 border border-white/10 p-10 rounded-2xl text-center">
+            <div class="w-16 h-16 bg-rose-600 mx-auto flex items-center justify-center rounded-sm font-black italic text-3xl mb-8">N</div>
+            <h2 class="text-2xl italic-black uppercase tracking-tighter mb-6">Admin Access Only</h2>
+            <div class="space-y-4">
+                <input type="email" id="admin-user" placeholder="Admin User" class="w-full p-4 text-xs font-bold rounded outline-none text-white">
+                <input type="password" id="admin-pass" placeholder="Master Key" class="w-full p-4 text-xs font-bold rounded outline-none text-white">
+                <button id="admin-login-btn" class="w-full bg-rose-600 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all text-white">Desbloquear Terminal</button>
+            </div>
+            <p id="auth-error" class="text-rose-600 text-[10px] font-black uppercase mt-4 hidden">Acceso Denegado</p>
+        </div>
+    </div>
+
+    <div id="admin-content" class="max-w-[1600px] mx-auto hidden">
+        <header class="flex justify-between items-center mb-10 border-b border-white/10 pb-6">
+            <div>
+                <h1 class="text-4xl italic-black uppercase tracking-tighter text-white">Whale <span class="text-rose-600">Control Center</span></h1>
+                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em]">Agencia NADA - High-Ticket Operations</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="location.reload()" class="p-3 bg-zinc-900 rounded-lg border border-white/5 hover:bg-rose-600 transition-all text-white"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
+                <button id="admin-logout-btn" class="p-3 bg-zinc-900 rounded-lg border border-white/5 hover:bg-rose-600 transition-all text-zinc-500 hover:text-white"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-3 space-y-8">
+                <div class="bg-zinc-900/80 border border-white/10 p-6 rounded-xl">
+                    <h3 class="text-[10px] font-black text-rose-600 uppercase mb-6 tracking-widest">Indexar Nuevo Whale</h3>
+                    <div class="space-y-4 text-white">
+                        <input type="text" id="new-name" placeholder="Nombre" class="w-full p-3 text-xs font-bold rounded">
+                        <input type="email" id="new-email" placeholder="Email" class="w-full p-3 text-xs font-bold rounded">
+                        <input type="text" id="new-pass-client" placeholder="Pass" class="w-full p-3 text-xs font-bold rounded">
+                        <button id="create-btn" class="w-full bg-rose-600 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all text-white">Crear Acceso</button>
+                    </div>
+                </div>
+                <div id="whales-list" class="space-y-2"></div>
+            </div>
+
+            <div id="editor-section" class="lg:col-span-9 bg-zinc-900/30 border border-white/5 rounded-2xl p-8 hidden">
+                <div class="flex justify-between items-start mb-10">
+                    <div>
+                        <div class="flex items-center gap-4 mb-2"><h2 id="edit-title" class="text-5xl italic-black uppercase text-white"></h2><span id="tier-badge" class="text-[8px] bg-rose-600 px-2 py-1 rounded font-black uppercase text-white"></span></div>
+                        <p id="edit-id-display" class="text-xs text-zinc-500 font-mono"></p>
+                    </div>
+                    <div class="flex gap-4">
+                        <button id="delete-btn" class="bg-zinc-800 border border-white/10 px-6 py-5 rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 hover:border-rose-600 transition-all text-white/50 hover:text-white">Eliminar Whale</button>
+                        <button id="save-btn" class="bg-rose-600 px-12 py-5 rounded-sm text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-rose-600/20 hover:scale-105 transition-all text-white">Sincronizar Whale</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 text-white">
+                    <div><label class="text-[9px] text-zinc-500 block mb-2 uppercase font-black">Módulos Abiertos</label><input type="number" id="edit-level" class="w-full p-4 rounded text-sm font-bold"></div>
+                    <div><label class="text-[9px] text-zinc-500 block mb-2 uppercase font-black">Key de Acceso</label><input type="text" id="edit-pass-client" class="w-full p-4 rounded text-sm font-bold"></div>
+                    <div><label class="text-[9px] text-zinc-500 block mb-2 uppercase font-black">Email</label><input type="text" id="edit-email-val" class="w-full p-4 rounded text-sm font-bold" readonly></div>
+                    <div><label class="text-[9px] text-zinc-500 block mb-2 uppercase font-black">Tier</label><select id="edit-tier" class="w-full p-4 rounded text-sm font-bold uppercase"><option value="Authority Whale">Authority Whale</option><option value="Executive Whale">Executive Whale</option></select></div>
+                </div>
+
+                <div class="bg-zinc-900/50 border border-white/5 p-8 rounded-xl mb-12">
+                    <h3 class="text-[10px] font-black text-rose-600 uppercase mb-6 tracking-widest flex items-center gap-2"><i data-lucide="dollar-sign" class="w-3 h-3"></i> Gestión de Revenue</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-white">
+                        <div><label class="text-[9px] text-zinc-500 block mb-2 uppercase font-black">Recaudado (USD)</label><input type="number" id="edit-collected" class="w-full p-4 rounded text-sm font-bold"></div>
+                        <div><label class="text-[9px] text-zinc-500 block mb-2 uppercase font-black">Pendiente (USD)</label><input type="number" id="edit-pending" class="w-full p-4 rounded text-sm font-bold"></div>
+                        <div><label class="text-[9px] text-zinc-500 block mb-2 uppercase font-black">LTV Proyectado</label><input type="number" id="edit-ltv" class="w-full p-4 rounded text-sm font-bold"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="flex justify-between items-center px-4 py-2 bg-white/5 rounded text-[9px] font-black uppercase tracking-widest text-zinc-500">
+                        <div class="w-12 text-center">Sesión</div>
+                        <div class="flex-grow grid grid-cols-3 gap-4">
+                            <div>URL de Google Meet</div>
+                            <div>Fecha/Hora Sesión</div>
+                            <div>Recurso Blueprint (PDF)</div>
+                        </div>
+                    </div>
+                    <div id="assets-container" class="space-y-1 text-white"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSry58sg2GhLYBZ7151Xa57ObgpXukbXs",
+            authDomain: "agencia-nada.firebaseapp.com",
+            projectId: "agencia-nada",
+            storageBucket: "agencia-nada.firebasestorage.app",
+            messagingSenderId: "469663154642",
+            appId: "1:469663154642:web:c63f30172589e7a224880b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let currentDocId = null;
+
+        document.getElementById('admin-login-btn').onclick = () => {
+            if(document.getElementById('admin-user').value === 'admin@agencianada.com' && document.getElementById('admin-pass').value === 'NadaAdmin2026!*') {
+                document.getElementById('admin-auth').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                loadWhales();
+            } else { document.getElementById('auth-error').classList.remove('hidden'); }
+        };
+
+        const loadWhales = async () => {
+            const snap = await getDocs(collection(db, "whales"));
+            const list = document.getElementById('whales-list');
+            list.innerHTML = "";
+            snap.forEach((docSnap) => {
+                const d = docSnap.data();
+                const div = document.createElement('div');
+                div.className = "p-4 bg-zinc-900 border border-white/5 rounded-lg cursor-pointer hover:border-rose-600 transition-all flex justify-between items-center";
+                div.innerHTML = `<p class="text-[11px] font-black uppercase text-white">${d.name}</p><span class="text-[8px] italic-black text-rose-600">S${d.level || 1}</span>`;
+                div.onclick = () => openWhaleEditor(docSnap.id);
+                list.appendChild(div);
+            });
+            lucide.createIcons();
+        };
+
+        async function openWhaleEditor(id) {
+            currentDocId = id;
+            const docSnap = await getDoc(doc(db, "whales", id));
+            if(!docSnap.exists()) return;
+            const data = docSnap.data();
+
+            document.getElementById('editor-section').classList.remove('hidden');
+            document.getElementById('edit-title').innerText = data.name;
+            document.getElementById('tier-badge').innerText = data.tier || "Authority Whale";
+            document.getElementById('edit-level').value = data.level || 1;
+            document.getElementById('edit-pass-client').value = data.pass || "";
+            document.getElementById('edit-email-val').value = data.email || "";
+            document.getElementById('edit-tier').value = data.tier || "Authority Whale";
+            document.getElementById('edit-collected').value = data.revenue_collected || 0;
+            document.getElementById('edit-pending').value = data.revenue_pending || 0;
+            document.getElementById('edit-ltv').value = data.revenue_ltv || 0;
+
+            let assetsHtml = "";
+            for(let i=1; i<=12; i++) {
+                const n = i.toString().padStart(2, '0');
+                assetsHtml += `
+                <div class="flex items-center gap-4 asset-row px-4">
+                    <span class="text-[10px] font-black text-rose-600 w-12 italic">S${n}</span>
+                    <div class="flex-grow grid grid-cols-3 gap-4">
+                        <input type="text" id="meet_${n}" value="${data[`meet_${n}`] || ''}" placeholder="Meet Link" class="p-3 text-[10px] rounded">
+                        <input type="text" id="schedule_${n}" value="${data[`schedule_${n}`] || ''}" placeholder="Ej: Viernes 10:30am" class="p-3 text-[10px] rounded">
+                        <input type="text" id="doc_${n}" value="${data[`doc_${n}`] || ''}" placeholder="Resource URL" class="p-3 text-[10px] rounded">
+                    </div>
+                </div>`;
+            }
+            document.getElementById('assets-container').innerHTML = assetsHtml;
+        }
+
+        document.getElementById('save-btn').onclick = async () => {
+            if(!currentDocId) return;
+            const update = { 
+                level: parseInt(document.getElementById('edit-level').value), 
+                pass: document.getElementById('edit-pass-client').value, 
+                email: document.getElementById('edit-email-val').value, 
+                tier: document.getElementById('edit-tier').value,
+                revenue_collected: parseFloat(document.getElementById('edit-collected').value) || 0,
+                revenue_pending: parseFloat(document.getElementById('edit-pending').value) || 0,
+                revenue_ltv: parseFloat(document.getElementById('edit-ltv').value) || 0
+            };
+            for(let i=1; i<=12; i++) { 
+                const n = i.toString().padStart(2, '0'); 
+                update[`meet_${n}`] = document.getElementById(`meet_${n}`).value;
+                update[`schedule_${n}`] = document.getElementById(`schedule_${n}`).value;
+                update[`doc_${n}`] = document.getElementById(`doc_${n}`).value;
+            }
+            await updateDoc(doc(db, "whales", currentDocId), update);
+            alert("Sincronización Exitosa.");
+            loadWhales();
+        };
+
+        // LÓGICA DE ELIMINACIÓN
+        document.getElementById('delete-btn').onclick = async () => {
+            if(!currentDocId) return;
+            const confirmName = document.getElementById('edit-title').innerText;
+            if(confirm(`¿Estás seguro de eliminar a ${confirmName}? Esta acción es irreversible y cortará su acceso al Blueprint.`)) {
+                await deleteDoc(doc(db, "whales", currentDocId));
+                alert("Whale eliminada del sistema.");
+                document.getElementById('editor-section').classList.add('hidden');
+                loadWhales();
+            }
+        };
+
+        document.getElementById('create-btn').onclick = async () => {
+            const name = document.getElementById('new-name').value;
+            const email = document.getElementById('new-email').value.toLowerCase().trim();
+            const pass = document.getElementById('new-pass-client').value;
+            if(!name || !email || !pass) return alert("Faltan datos");
+            const docId = email.replace(/\./g, '-');
+            await setDoc(doc(db, "whales", docId), { 
+                name, email, pass, level: 1, 
+                tier: "Authority Whale", 
+                revenue_collected: 0, 
+                revenue_pending: 0, 
+                revenue_ltv: 0 
+            });
+            alert("Nueva Whale indexada.");
+            loadWhales();
+            document.getElementById('new-name').value = "";
+            document.getElementById('new-email').value = "";
+            document.getElementById('new-pass-client').value = "";
+        };
+
+        document.getElementById('admin-logout-btn').onclick = () => { location.reload(); };
+        lucide.createIcons();
+    </script>
+</body>
+</html>
