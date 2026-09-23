@@ -288,7 +288,7 @@
                         </p>
                     </div>
 
-                    <form id="contactForm" action="https://formspree.io/f/xredypdw" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <form id="contactForm" action="https://formsubmit.co/ajax/nadanada.agencia@gmail.com" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
                         <div class="space-y-3">
                             <label class="mono text-[11px] font-semibold uppercase tracking-widest" style="color: var(--ink-dim);">Nombre Completo o Empresa</label>
@@ -297,7 +297,7 @@
 
                         <div class="space-y-3">
                             <label class="mono text-[11px] font-semibold uppercase tracking-widest" style="color: var(--ink-dim);">Correo Electrónico</label>
-                            <input type="email" name="_replyto" required placeholder="email@empresa.com" class="w-full bg-transparent border-b py-3 outline-none transition-colors text-base tracking-wide" style="border-color: var(--line); color: var(--ink);">
+                            <input type="email" name="email" required placeholder="email@empresa.com" class="w-full bg-transparent border-b py-3 outline-none transition-colors text-base tracking-wide" style="border-color: var(--line); color: var(--ink);">
                         </div>
 
                         <div class="md:col-span-2 space-y-3">
@@ -340,6 +340,9 @@
                         </div>
 
                         <input type="hidden" name="_subject" value="NUEVA COTIZACIÓN WEB - AGENCIA NADA">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
                         <button type="submit" id="submitBtn" class="md:col-span-2 mt-6 border py-6 mono text-[12px] font-semibold uppercase tracking-[0.5em] transition-all" style="border-color: var(--ink); color: var(--ink);" onmouseover="this.style.background='var(--ink)';this.style.color='var(--paper)'" onmouseout="this.style.background='transparent';this.style.color='var(--ink)'">
                             Enviar Solicitud
@@ -400,7 +403,8 @@
                     headers: { 'Accept': 'application/json' }
                 });
 
-                if (response.ok) {
+                const data = await response.json().catch(() => ({}));
+                if (response.ok && String(data.success) === 'true') {
                     form.reset();
                     successBlock.classList.remove('hidden');
                 } else {
